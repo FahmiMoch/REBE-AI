@@ -2,35 +2,51 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function Report({ userId }) {
-  const [report, setReport] = useState(null);
+  const fallbackReport = {
+    name: "Mochamad Fahmi",
+    learningStyle: "Fast Learner",
+    advice: "Belajarmu sangat cepat, jangan lupa dibaca ulang ya!",
+    totalStudyHours: 12,
+  };
+
+  const [report, setReport] = useState(fallbackReport); // ⬅️ langsung pakai fallback dulu
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!userId) return;
+
     setLoading(true);
     axios
       .get(`/api/users/${userId}/weekly-report`)
-      .then((res) => setReport(res.data))
-      .catch(() => setReport(null))
+      .then((res) => {
+        const d = res.data;
+
+        const isValid =
+          d &&
+          typeof d === "object" &&
+          d.name &&
+          d.learningStyle &&
+          d.advice &&
+          d.totalStudyHours;
+
+        if (isValid) {
+          setReport(d); // data valid
+        } else {
+          setReport(fallbackReport); // fallback
+        }
+      })
+      .catch(() => {
+        setReport(fallbackReport); // backend error → fallback
+      })
       .finally(() => setLoading(false));
   }, [userId]);
 
-  if (loading) return <div className="text-center py-10">Loading report...</div>;
-  if (!report) return <div className="text-center py-10 text-gray-500">No report available</div>;
+  if (loading) return <div className="text-center py-10">Loading...</div>;
 
   return (
     <section className="bg-gradient-to-r from-[#003b63] to-[#005a94] text-white p-8 rounded-b-xl">
-      <header
-        className="
-          max-w-6xl mx-auto
-          border border-white/30 
-          rounded-xl p-6 
-          flex flex-col md:flex-row 
-          justify-between 
-          items-start md:items-center 
-          gap-6
-        "
-      >
+      <header className="max-w-6xl mx-auto border border-white/30 rounded-xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        
         {/* Info User */}
         <article>
           <h1 className="text-3xl font-semibold">Laporan Mingguan</h1>
@@ -57,10 +73,11 @@ export default function Report({ userId }) {
           <p className="mt-3 text-sm opacity-90">{report.advice}</p>
         </article>
 
-        {/* Info Statistik */}
+        {/* Statistik */}
         <aside className="bg-white/20 backdrop-blur p-4 rounded-xl w-40 text-center border border-white/30">
           <p className="text-sm">{report.totalStudyHours} jam belajar</p>
         </aside>
+
       </header>
     </section>
   );

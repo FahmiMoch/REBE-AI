@@ -16,23 +16,26 @@ export default function GreetingSection({ userName = "User", subscriptionStatus 
 
         {/* Status Langganan */}
         <article className="bg-white text-black w-full p-4 rounded-xl shadow-md border border-black/10">
-          <h2 className="font-bold mb-4 text-base md:text-lg">Status Langganan</h2>
+  <h2 className="font-bold mb-4 text-base md:text-lg">Status Langganan</h2>
 
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            {/* Kotak kecil + teks */}
-            <div className="flex items-start md:items-center gap-2 w-full md:w-3/4">
-              <div className="w-5 h-5 bg-gray-200 rounded-md flex items-center justify-center text-white text-xs"></div>
-              <p className="text-sm md:text-base leading-normal break-words">
-                Langganan telah {subscriptionStatus}. Berlangganan kembali untuk melanjutkan aktivitas belajar Anda.
-              </p>
-            </div>
+  <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
 
-            {/* Tombol */}
-            <button className="w-full md:w-auto bg-[#033E5F] text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-              Lanjut Berlangganan
-            </button>
-          </div>
-        </article>
+    {/* Kotak kecil + teks */}
+    <div className="flex items-start md:items-center gap-2 w-full md:w-3/4">
+      <div className="w-5 h-5 bg-gray-200 rounded-md flex-none shrink-0 flex items-center justify-center text-white text-xs"></div>
+
+      <p className="text-sm md:text-base leading-normal break-words">
+        Langganan telah {subscriptionStatus}. Berlangganan kembali untuk melanjutkan aktivitas belajar Anda.
+      </p>
+    </div>
+
+    {/* Tombol */}
+    <button className="w-full md:w-auto bg-[#033E5F] text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+      Lanjut Berlangganan
+    </button>
+  </div>
+</article>
+
       </div>
     </section>
   );

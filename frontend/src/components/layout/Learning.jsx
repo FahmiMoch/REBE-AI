@@ -17,20 +17,21 @@ export default function Learning({ loading }) {
           <div className="animate-pulse h-8 bg-gray-300 rounded w-full"></div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
-          <div className="bg-gray-200 p-4 rounded text-sm text-gray-700 w-full h-16 flex items-center justify-start">
-            Sedang dipelajari
-          </div>
-          <div className="bg-gray-200 p-4 rounded text-sm text-gray-700 w-full h-16 flex items-center justify-start">
-            Sedang dipelajari
-          </div>
-          <div className="bg-gray-200 p-4 rounded text-sm text-gray-700 w-full h-16 flex items-center justify-start">
-            Sedang dipelajari
-          </div>
-          <div className="bg-gray-200 p-4 rounded text-sm text-gray-700 w-full h-16 flex items-center justify-start">
-            Sedang dipelajari
-          </div>
-        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:flex lg:flex-col">
+  <div className="bg-gray-200 p-4 rounded text-sm text-black h-16 flex items-start pt-1">
+    Sedang dipelajari
+  </div>
+  <div className="bg-gray-200 p-4 rounded text-sm text-black h-16 flex items-start pt-1">
+    Sedang dipelajari
+  </div>
+  <div className="bg-gray-200 p-4 rounded text-sm text-black h-16 flex items-start pt-1">
+    Sedang dipelajari
+  </div>
+  <div className="bg-gray-200 p-4 rounded text-sm text-black h-16 flex items-start pt-1">
+    Sedang dipelajari
+  </div>
+</div>
+
       )}
     </article>
   );

@@ -65,9 +65,9 @@ export default function HeaderInsight() {
             {openDropdown && (
               <ul className="absolute right-0 mt-2 bg-white shadow-md rounded-lg w-40 py-2 text-sm font-medium text-gray-700 z-30">
                 <li><a href="/dashboard" className="block px-4 py-2 hover:bg-gray-100">Dashboard</a></li>
-                <li><a href="/profile" className="block px-4 py-2 hover:bg-gray-100">Profile Saya</a></li>
-                <li><a href="/daftar" className="block px-4 py-2 hover:bg-gray-100">Daftar Pesanan</a></li>
-                <li><a href="/pengaturan" className="block px-4 py-2 hover:bg-gray-100">Pengaturan</a></li>
+                <li><a href="#" className="block px-4 py-2 hover:bg-gray-100">Profile Saya</a></li>
+                <li><a href="#" className="block px-4 py-2 hover:bg-gray-100">Daftar Pesanan</a></li>
+                <li><a href="#" className="block px-4 py-2 hover:bg-gray-100">Pengaturan</a></li>
                 <li>
                   <button
                     onClick={handleLogout}
@@ -80,9 +80,14 @@ export default function HeaderInsight() {
             )}
           </div>
 
-          {/* Bell */}
-          <button className="hover:text-gray-700" aria-label="Notification Button">
-            <FontAwesomeIcon icon={faBell} className="w-6 h-6 text-black" />
+           {/* Bell Icon */}
+           <button className="relative hover:text-gray-700" aria-label="Notification Bell">
+            <FontAwesomeIcon
+              icon={faBell}
+              className="absolute w-6 h-6 text-black"
+              style={{ transform: "scale(1.15)" }}
+            />
+            <FontAwesomeIcon icon={faBell} className="relative w-6 h-6 text-white" />
           </button>
 
           {/* Hamburger (mobile) */}

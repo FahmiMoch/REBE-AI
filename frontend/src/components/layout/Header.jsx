@@ -80,9 +80,14 @@ export default function HeaderInsight() {
             )}
           </div>
 
-          {/* Bell */}
-          <button className="hover:text-gray-700" aria-label="Notification Button">
-            <FontAwesomeIcon icon={faBell} className="w-6 h-6 text-black" />
+            {/* Bell Icon */}
+            <button className="relative hover:text-gray-700" aria-label="Notification Bell">
+            <FontAwesomeIcon
+              icon={faBell}
+              className="absolute w-6 h-6 text-black"
+              style={{ transform: "scale(1.15)" }}
+            />
+            <FontAwesomeIcon icon={faBell} className="relative w-6 h-6 text-white" />
           </button>
 
           {/* Hamburger (mobile) */}

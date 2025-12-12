@@ -14,8 +14,13 @@ function SummaryCard({ title, value, icon }) {
 }
 
 export default function SummarySection({ userId }) {
-  const [summaries, setSummaries] = useState([]);
-  const [loading, setLoading] = useState(false);
+  // 🔥 Fallback dummy langsung ditampilkan di awal
+  const fallbackSummaries = [
+    { title: "Kecepatan Belajar", value: "10 Materi" },
+    { title: "Konsistensi", value: "6 Hari Aktif" },
+    { title: "Rata - Rata", value: "90 Menit" },
+    { title: "Evaluasi", value: "90 / A" },
+  ];
 
   const iconMap = [
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
@@ -32,17 +37,38 @@ export default function SummarySection({ userId }) {
     </svg>,
   ];
 
+  const [summaries, setSummaries] = useState(fallbackSummaries); // ⬅️ fallback langsung tampil
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     if (!userId) return;
+
     setLoading(true);
-    axios.get(`/api/users/${userId}/summary`)
-      .then(res => setSummaries(res.data))
-      .catch(() => setSummaries([]))
+    axios
+      .get(`/api/users/${userId}/summary`)
+      .then((res) => {
+        const d = res.data;
+
+        // Pastikan data array & minimal punya title/value
+        const isValid =
+          Array.isArray(d) &&
+          d.length === 4 &&
+          d.every((i) => i.title && i.value);
+
+        if (isValid) {
+          setSummaries(d); // pakai data dari backend
+        } else {
+          setSummaries(fallbackSummaries); // fallback
+        }
+      })
+      .catch(() => {
+        setSummaries(fallbackSummaries); // error → fallback
+      })
       .finally(() => setLoading(false));
   }, [userId]);
 
-  if (loading) return <div className="text-center py-10 text-black">Loading summary...</div>;
-  if (!summaries.length) return <div className="text-center py-10 text-black">Summary not available</div>;
+  if (loading)
+    return <div className="text-center py-10 text-black">Loading...</div>;
 
   return (
     <section className="w-full mt-10">
@@ -50,7 +76,11 @@ export default function SummarySection({ userId }) {
         <ul className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {summaries.map((item, idx) => (
             <li key={idx}>
-              <SummaryCard title={item.title} value={item.value} icon={iconMap[idx]} />
+              <SummaryCard
+                title={item.title}
+                value={item.value}
+                icon={iconMap[idx]}
+              />
             </li>
           ))}
         </ul>
