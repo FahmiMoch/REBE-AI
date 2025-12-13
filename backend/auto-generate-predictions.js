@@ -12,7 +12,7 @@ async function autoGenerateForAllCompletions() {
     console.log(' Testing ML API connection...');
     try {
       const testResponse = await axios.post(
-        'https://ml-ai-learning-insight-production.up.railway.app/predict',
+        'https://ml.teamcs222.my.id/predict',
         {
           total_active_days: 7,
           avg_study_duration: 60,

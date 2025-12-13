@@ -3,7 +3,7 @@ const prisma = require('./prisma');
 
 class MLIntegrationService {
   constructor() {
-    this.mlApiUrl = process.env.ML_API_URL || 'https://ml-ai-learning-production.up.railway.app/predict';
+    this.mlApiUrl = process.env.ML_API_URL || 'https://ml.teamcs222.my.id/predict';
   }
 
   // ... [collectUserData, calculateMetricsFromRealData, predictLearningStyle tetap sama]
