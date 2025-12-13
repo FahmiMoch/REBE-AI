@@ -57,4 +57,4 @@ const Port = process.env.PORT || 5000;
 app.listen(Port, () => {
     console.log(`Server is running on port ${Port}`);
     console.log(`ML Predictions API available at http://localhost:${Port}/api/ml-predictions`);
-});
+}); 

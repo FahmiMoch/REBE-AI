@@ -1,3 +1,9 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
 generator client {
   provider = "prisma-client-js"
   output   = "../node_modules/.prisma/client"
@@ -9,181 +15,202 @@ datasource db {
 }
 
 model User {
-  id                         Int                          @id @default(autoincrement())
-  name                       String
-  email                      String                       @unique
-  phone                      String
-  createdAt                  DateTime                     @default(now())
-  updatedAt                  DateTime                     @updatedAt
-  password                   String
-  display_name               String                       @unique @default("unknown") @map("displayName")
-  user_role                  Int                          @default(2) @map("userRole")
-  Authentication             Authentication[]
-  DeveloperJourneyCompletion DeveloperJourneyCompletion[]
-  DeveloperJourneyTutorial   DeveloperJourneyTutorial[]
-  ExamRegistration           ExamRegistration[]
-  MLPrediction               MLPrediction[]
-  StudySession               StudySession[]
+  id           Int      @id @default(autoincrement())
+  display_name String   @unique
+  name         String
+  email        String   @unique
+  password     String
+  phone        String
+  user_role    Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt()
+
+  tutorials                   DeveloperJourneyTutorial[]
+  examRegistrations           ExamRegistration[]
+  developerJourneyCompletions DeveloperJourneyCompletion[]
+  mlPredictions               MLPrediction[]
+  studySessions               StudySession[] // Tambahkan ini untuk relasi dengan StudySession
 }
 
 model Authentication {
-  id        Int      @id @default(autoincrement())
-  token     String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  userId    Int
-  User      User     @relation(fields: [userId], references: [id])
+  id    Int    @id @default(autoincrement())
+  token String @unique
 }
 
 model DeveloperJourney {
-  id                         Int                          @id @default(autoincrement())
-  name                       String                       @unique
-  summary                    String
-  point                      Int                          @default(0)
-  xp                         Int                          @default(0)
-  status                     Int                          @default(0)
-  listed                     Int                          @default(0)
-  createdAt                  DateTime                     @default(now())
-  updatedAt                  DateTime                     @updatedAt
-  deadLine                   DateTime
-  requiredPoint              Int                          @default(0)
-  requiredXp                 Int                          @default(0)
-  DeveloperJourneyCompletion DeveloperJourneyCompletion[]
-  DeveloperJourneyTutorial   DeveloperJourneyTutorial[]
-  MLPrediction               MLPrediction[]
+  id             Int      @id @default(autoincrement())
+  name           String   @unique
+  summary        String
+  point          Int      @default(0)
+  required_point Int      @default(0)
+  xp             Int      @default(0)
+  required_xp    Int      @default(0)
+  status         Int      @default(0)
+  listed         Int      @default(0)
+  dead_line      DateTime
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt()
+
+  tutorials   DeveloperJourneyTutorial[]
+  completions DeveloperJourneyCompletion[]
+  mlPredictions MLPrediction[]
 }
 
 model DeveloperJourneyTutorial {
-  id                               Int                                @id @default(autoincrement())
-  title                            String
-  position                         Int
-  status                           String
-  authorId                         Int
-  createdAt                        DateTime                           @default(now())
-  developerJourneyId               Int
-  updatedAt                        DateTime
-  User                             User                               @relation(fields: [authorId], references: [id])
-  DeveloperJourney                 DeveloperJourney                   @relation(fields: [developerJourneyId], references: [id])
-  DeveloperJourneyTutorialQuestion DeveloperJourneyTutorialQuestion[]
-  ExamRegistration                 ExamRegistration[]
-  StudySession                     StudySession[]
+  id                   Int      @id @default(autoincrement())
+  developer_journey_id Int
+  title                String
+  position             Int
+  status               String
+  created_at           DateTime @default(now())
+  updated_at           DateTime @updatedAt()
+  author_id            Int
+
+  developerJourney DeveloperJourney @relation(fields: [developer_journey_id], references: [id])
+  author           User             @relation(fields: [author_id], references: [id])
+
+  questions         DeveloperJourneyTutorialQuestion[]
+  examRegistrations ExamRegistration[]
+  studySessions     StudySession[] // Tambahkan ini untuk relasi dengan StudySession
 }
 
 model DeveloperJourneyTutorialQuestion {
-  id                       Int                      @id @default(autoincrement())
-  position                 Int
-  createdAt                DateTime                 @default(now())
-  questionText             String
-  tutorialId               Int
-  updatedAt                DateTime
-  DeveloperJourneyTutorial DeveloperJourneyTutorial @relation(fields: [tutorialId], references: [id])
-  ExamAnswer               ExamAnswer[]
-  TutorialOption           TutorialOption[]
+  id            Int      @id @default(autoincrement())
+  tutorial_id   Int
+  question_text String
+  position      Int
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt()
+
+  tutorial DeveloperJourneyTutorial @relation(fields: [tutorial_id], references: [id])
+
+  options     TutorialOption[]
+  examAnswers ExamAnswer[]
 }
 
 model TutorialOption {
-  id                               Int                              @id @default(autoincrement())
-  createdAt                        DateTime                         @default(now())
-  isCorrect                        Boolean
-  optionLabel                      String
-  optionText                       String
-  questionId                       Int
-  updatedAt                        DateTime
-  ExamAnswer                       ExamAnswer[]
-  DeveloperJourneyTutorialQuestion DeveloperJourneyTutorialQuestion @relation(fields: [questionId], references: [id])
+  id           Int      @id @default(autoincrement())
+  question_id  Int
+  option_label String
+  option_text  String
+  is_correct   Boolean
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt()
+
+  // RELATION
+  question    DeveloperJourneyTutorialQuestion @relation(fields: [question_id], references: [id])
+  examAnswers ExamAnswer[]
 }
 
 model ExamRegistration {
-  id                       Int                      @id @default(autoincrement())
-  status                   String
-  createdAt                DateTime                 @default(now())
-  deadlineAt               DateTime?
-  examFinishedAt           DateTime?
-  examineeId               Int
-  tutorialId               Int
-  updatedAt                DateTime
-  ExamAnswer               ExamAnswer[]
-  User                     User                     @relation(fields: [examineeId], references: [id])
-  DeveloperJourneyTutorial DeveloperJourneyTutorial @relation(fields: [tutorialId], references: [id])
-  ExamResult               ExamResult?
-  MLPrediction             MLPrediction[]
+  id               Int       @id @default(autoincrement())
+  tutorial_id      Int
+  examinees_id     Int
+  status           String
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt()
+  deadline_at      DateTime?
+  exam_finished_at DateTime?
+  deleted_at       DateTime?
+
+  examinee User                     @relation(fields: [examinees_id], references: [id])
+  tutorial DeveloperJourneyTutorial @relation(fields: [tutorial_id], references: [id])
+
+  answers ExamAnswer[]
+  result  ExamResult?
+  mlPredictions MLPrediction[]
 }
 
 model ExamAnswer {
-  id                               Int                              @id @default(autoincrement())
-  createdAt                        DateTime                         @default(now())
-  examRegistrationId               Int
-  isCorrect                        Boolean
-  optionId                         Int
-  questionId                       Int
-  updatedAt                        DateTime
-  ExamRegistration                 ExamRegistration                 @relation(fields: [examRegistrationId], references: [id])
-  TutorialOption                   TutorialOption                   @relation(fields: [optionId], references: [id])
-  DeveloperJourneyTutorialQuestion DeveloperJourneyTutorialQuestion @relation(fields: [questionId], references: [id])
+  id                   Int      @id @default(autoincrement())
+  exam_registration_id Int
+  question_id          Int
+  option_id            Int
+  is_correct           Boolean
+  created_at           DateTime @default(now())
+  updated_at           DateTime @updatedAt()
+
+  registration ExamRegistration                 @relation(fields: [exam_registration_id], references: [id])
+  question     DeveloperJourneyTutorialQuestion @relation(fields: [question_id], references: [id])
+  option       TutorialOption                   @relation(fields: [option_id], references: [id])
 }
 
 model ExamResult {
-  id                 Int              @id @default(autoincrement())
-  score              Float
-  createdAt          DateTime         @default(now())
-  examRegistrationId Int              @unique
-  isPassed           Boolean
-  lookReportAt       DateTime?
-  totalQuestions     Int
-  ExamRegistration   ExamRegistration @relation(fields: [examRegistrationId], references: [id])
-  MLPrediction       MLPrediction[]
+  id                   Int       @id @default(autoincrement())
+  exam_registration_id Int       @unique
+  total_questions      Int
+  score                Float
+  is_passed            Boolean
+  created_at           DateTime  @default(now())
+  look_report_at       DateTime?
+
+  registration ExamRegistration @relation(fields: [exam_registration_id], references: [id])
+  mlPredictions MLPrediction[]
 }
 
 model DeveloperJourneyCompletion {
-  id                  Int              @id @default(autoincrement())
-  avgSubmissionRating Float?           @default(0)
-  createdAt           DateTime         @default(now())
-  enrollingTimes      Int              @default(0)
-  enrollmentsAt       DateTime?
-  journeyId           Int
-  lastEnrolledAt      DateTime?
-  studyDuration       Int              @default(0)
-  updatedAt           DateTime
-  userId              Int
-  DeveloperJourney    DeveloperJourney @relation(fields: [journeyId], references: [id])
-  User                User             @relation(fields: [userId], references: [id])
-  MLPrediction        MLPrediction[]
+  id                    Int       @id @default(autoincrement())
+  user_id               Int
+  journey_id            Int
+  created_at            DateTime  @default(now())
+  updated_at            DateTime  @updatedAt()
+  enrolling_times       Int       @default(0)
+  enrollments_at        DateTime?
+  last_enrolled_at      DateTime?
+  study_duration        Int       @default(0)
+  avg_submission_rating Float?    @default(0)
+
+  // RELATIONS
+  user          User             @relation(fields: [user_id], references: [id])
+  journey       DeveloperJourney @relation(fields: [journey_id], references: [id])
+  mlPredictions MLPrediction[]
 }
 
+// MODEL BARU UNTUK ML PREDICTIONS
 model MLPrediction {
-  id                         Int                         @id @default(autoincrement())
-  deskripsi                  String
-  saran                      String[]
-  avgExamDuration            Float
-  avgExamScore               Float
-  avgStudyDuration           Float
-  avgSubmissionRating        Float
-  completionId               Int?
-  createdAt                  DateTime                    @default(now())
-  examRegistrationId         Int?
-  examResultId               Int?
-  gayaBelajar                String
-  journeyId                  Int
-  totalActiveDays            Int
-  updatedAt                  DateTime
-  userId                     Int
-  DeveloperJourneyCompletion DeveloperJourneyCompletion? @relation(fields: [completionId], references: [id])
-  ExamRegistration           ExamRegistration?           @relation(fields: [examRegistrationId], references: [id])
-  ExamResult                 ExamResult?                 @relation(fields: [examResultId], references: [id])
-  DeveloperJourney           DeveloperJourney            @relation(fields: [journeyId], references: [id])
-  User                       User                        @relation(fields: [userId], references: [id])
+  id                      Int       @id @default(autoincrement())
+  user_id                 Int
+  journey_id              Int
+  completion_id           Int?
+  exam_registration_id    Int?
+  exam_result_id          Int?
+  
+  // Fitur untuk ML
+  total_active_days       Int
+  avg_study_duration      Float
+  avg_exam_duration       Float
+  avg_submission_rating   Float
+  avg_exam_score          Float
+  
+  // Hasil dari ML
+  gaya_belajar            String
+  deskripsi               String
+  saran                   String[]
+  
+  // Metadata
+  created_at              DateTime  @default(now())
+  updated_at              DateTime  @updatedAt()
+  
+  // Relations
+  user                 User                     @relation(fields: [user_id], references: [id])
+  journey              DeveloperJourney         @relation(fields: [journey_id], references: [id])
+  completion           DeveloperJourneyCompletion? @relation(fields: [completion_id], references: [id])
+  examRegistration     ExamRegistration?        @relation(fields: [exam_registration_id], references: [id])
+  examResult           ExamResult?              @relation(fields: [exam_result_id], references: [id])
 }
 
+// OPSIONAL: Model untuk tracking study session
 model StudySession {
-  id                       Int                      @id @default(autoincrement())
-  duration                 Int?                     @default(0)
-  endTime                  DateTime?
-  startTime                DateTime
-  tutorialId               Int
-  userId                   Int
-  DeveloperJourneyTutorial DeveloperJourneyTutorial @relation(fields: [tutorialId], references: [id])
-  User                     User                     @relation(fields: [userId], references: [id])
-
-  @@index([tutorialId])
-  @@index([userId])
+  id          Int      @id @default(autoincrement())
+  user_id     Int
+  tutorial_id Int
+  start_time  DateTime
+  end_time    DateTime?
+  duration    Int?     @default(0) // dalam menit
+  
+  user      User                     @relation(fields: [user_id], references: [id])
+  tutorial  DeveloperJourneyTutorial @relation(fields: [tutorial_id], references: [id])
+  
+  @@index([user_id])
+  @@index([tutorial_id])
 }

@@ -28,7 +28,6 @@ const login = async (req, res, next) => {
 const refresh = async (req, res, next) => {
     try {
         const result = await refreshAccessToken(req);
-
         res.status(StatusCodes.OK).json({
             data: result,
             status: StatusCodes.OK
@@ -41,7 +40,6 @@ const refresh = async (req, res, next) => {
 const logout = async (req, res, next) => {
     try {
         const result = await deleteRefreshToken(req);
-
         res.status(StatusCodes.OK).json({
             data: result,
             status: StatusCodes.OK
@@ -50,5 +48,6 @@ const logout = async (req, res, next) => {
         next(err);
     }
 };
+
 
 module.exports = { register, login, refresh, logout };

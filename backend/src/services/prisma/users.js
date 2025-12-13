@@ -19,7 +19,10 @@ const generateAccessToken = (user) => {
 
 const generateRefreshToken = (user) => {
     return jwt.sign(
-        { userId: user.id, email: user.email },
+        {
+            userId: user.id,
+            email: user.email
+        },
         process.env.REFRESH_TOKEN_SECRET || 'fallback_refresh_secret_key',
         { expiresIn: '7d' }
     );
@@ -27,35 +30,44 @@ const generateRefreshToken = (user) => {
 
 const registerUser = async (req) => {
     try {
-        // Gunakan camelCase sesuai Postman
-        const { displayName, name, email, password, phone, userRole } = req.body;
+        const { display_name, name, email, password, phone, user_role } = req.body;
 
-        const existingEmailUser = await prisma.user.findUnique({ where: { email } });
-        if (existingEmailUser) throw new BadRequestError('User with this email already exists');
+        const existingEmailUser = await prisma.user.findUnique({
+            where: { email }
+        });
 
-        const existingDisplayNameUser = await prisma.user.findUnique({ where: { display_name: displayName } });
-        if (existingDisplayNameUser) throw new BadRequestError('User with this display name already exists');
+        if (existingEmailUser) {
+            throw new BadRequestError('User with this email already exists');
+        }
+
+        const existingDisplayNameUser = await prisma.user.findUnique({
+            where: { display_name }
+        });
+
+        if (existingDisplayNameUser) {
+            throw new BadRequestError('User with this display name already exists');
+        }
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = await prisma.user.create({
             data: {
-                display_name: displayName,
+                display_name,
                 name,
                 email,
                 password: hashedPassword,
                 phone,
-                user_role: parseInt(userRole)
+                user_role: parseInt(user_role)
             }
         });
 
         return {
             id: user.id,
-            displayName: user.display_name,
+            display_name: user.display_name,
             name: user.name,
             email: user.email,
             phone: user.phone,
-            userRole: user.user_role,
+            user_role: user.user_role,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt
         };
@@ -68,35 +80,46 @@ const registerUser = async (req) => {
 const loginUser = async (req) => {
     try {
         const { email, password } = req.body;
-        const user = await prisma.user.findUnique({ where: { email } });
-        if (!user) throw new UnauthenticatedError('Invalid credentials');
+
+        const user = await prisma.user.findUnique({
+            where: { email }
+        });
+
+        if (!user) {
+            throw new UnauthenticatedError('Invalid credentials');
+        }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) throw new UnauthenticatedError('Invalid credentials');
+
+        if (!isPasswordValid) {
+            throw new UnauthenticatedError('Invalid credentials');
+        }
 
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
 
+        // === SIMPAN REFRESH TOKEN KE TABEL AUTHENTICATIONS ===
         await prisma.authentication.create({
             data: {
-                token: refreshToken,
-                userId: user.id
+                token: refreshToken
             }
         });
+
         return {
             user: {
                 id: user.id,
-                displayName: user.display_name,
+                display_name: user.display_name,
                 name: user.name,
                 email: user.email,
                 phone: user.phone,
-                userRole: user.user_role,
+                user_role: user.user_role,
                 createdAt: user.createdAt,
                 updatedAt: user.updatedAt
             },
             accessToken,
             refreshToken
         };
+
     } catch (error) {
         console.error('Error logging in user:', error);
         throw error;
@@ -106,17 +129,44 @@ const loginUser = async (req) => {
 const refreshAccessToken = async (req) => {
     try {
         const { refreshToken } = req.body;
-        if (!refreshToken) throw new BadRequestError('Refresh token is required');
 
-        const storedToken = await prisma.authentication.findUnique({ where: { token: refreshToken } });
-        if (!storedToken) throw new BadRequestError('Refresh token not registered');
+        if (!refreshToken) {
+            throw new BadRequestError('Refresh token is required');
+        }
 
-        const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET || 'fallback_refresh_secret_key');
+        const storedToken = await prisma.authentication.findUnique({
+            where: { token: refreshToken }
+        });
 
-        const user = await prisma.user.findUnique({ where: { id: decoded.userId } });
-        if (!user) throw new BadRequestError('Invalid refresh token');
+        if (!storedToken) {
+            throw new BadRequestError('Refresh token not registered');
+        }
 
-        return { accessToken: generateAccessToken(user) };
+        let decoded;
+        try {
+            decoded = jwt.verify(
+                refreshToken,
+                process.env.REFRESH_TOKEN_SECRET || 'fallback_refresh_secret_key'
+            );
+        } catch (err) {
+            console.error('Error verifying refresh token:', err);
+            throw new BadRequestError('Invalid refresh token');
+        }
+
+        // === CARI USER ===
+        const user = await prisma.user.findUnique({
+            where: { id: decoded.userId }
+        });
+
+        if (!user) {
+            throw new BadRequestError('Invalid refresh token');
+        }
+        const newAccessToken = generateAccessToken(user);
+
+        return {
+            accessToken: newAccessToken
+        };
+
     } catch (error) {
         console.error('Error refreshing access token:', error);
         throw error;
@@ -125,13 +175,27 @@ const refreshAccessToken = async (req) => {
 
 const deleteRefreshToken = async (req) => {
     const { refreshToken } = req.body;
-    if (!refreshToken) throw new BadRequestError('Refresh token is required');
 
-    const tokenExists = await prisma.authentication.findUnique({ where: { token: refreshToken } });
-    if (!tokenExists) throw new BadRequestError('Refresh token not found');
+    if (!refreshToken) {
+        throw new BadRequestError('Refresh token is required');
+    }
 
-    await prisma.authentication.delete({ where: { token: refreshToken } });
+    const tokenExists = await prisma.authentication.findUnique({
+        where: { token: refreshToken }
+    });
+
+    if (!tokenExists) {
+        throw new BadRequestError('Refresh token not found');
+    }
+
+    await prisma.authentication.delete({
+        where: { token: refreshToken }
+    });
+
     return { message: 'Refresh token deleted successfully' };
 };
 
+
+
 module.exports = { registerUser, loginUser, refreshAccessToken, deleteRefreshToken };
+
