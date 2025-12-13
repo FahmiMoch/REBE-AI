@@ -46,7 +46,7 @@ export default function HeaderInsight() {
 
           {/* Avatar */}
           <div className="relative w-10 h-10 flex items-center justify-center">
-            <div className="absolute w-10 h-10 bg-blue-200 rounded-full z-0"></div>
+            <div className="absolute w-10 h-10 bg-blue-400 rounded-full z-0"></div>
             <div className="w-6 h-6 bg-gray-300 rounded-full z-10"></div>
           </div>
 

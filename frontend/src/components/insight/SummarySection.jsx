@@ -3,15 +3,35 @@ import axios from "axios";
 
 function SummaryCard({ title, value, icon }) {
   return (
-    <article className="bg-[#1c4465] text-white p-5 rounded-xl shadow">
-      <div className="flex items-center gap-3">
-        <div className="text-2xl">{icon}</div>
-        <p className="text-sm">{title}</p>
+    <article
+      className="
+        w-full h-full
+        bg-[#1c4465] text-white
+        p-6
+        rounded-xl shadow
+        flex flex-col justify-between
+
+        max-md:p-3
+      "
+    >
+      <div className="flex items-center gap-3 max-md:gap-2">
+        <div className="shrink-0 text-2xl max-md:text-lg">
+          {icon}
+        </div>
+
+        <p className="text-sm opacity-90 max-md:text-xs leading-tight">
+          {title}
+        </p>
       </div>
-      <h3 className="text-xl font-bold mt-2">{value}</h3>
+
+      <h3 className="text-2xl font-bold mt-6 max-md:text-base max-md:mt-3">
+        {value}
+      </h3>
     </article>
   );
 }
+
+
 
 export default function SummarySection({ userId }) {
   // 🔥 Fallback dummy langsung ditampilkan di awal
@@ -71,11 +91,11 @@ export default function SummarySection({ userId }) {
     return <div className="text-center py-10 text-black">Loading...</div>;
 
   return (
-    <section className="w-full mt-10">
-      <div className="max-w-6xl mx-auto px-6">
-        <ul className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <section className="mt-10">
+      <div className="max-w-6xl mx-auto">
+        <ul className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {summaries.map((item, idx) => (
-            <li key={idx}>
+            <li key={idx} className="w-full h-full">
               <SummaryCard
                 title={item.title}
                 value={item.value}
@@ -87,4 +107,5 @@ export default function SummarySection({ userId }) {
       </div>
     </section>
   );
+  
 }

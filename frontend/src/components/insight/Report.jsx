@@ -9,11 +9,14 @@ export default function Report({ userId }) {
     totalStudyHours: 12,
   };
 
-  const [report, setReport] = useState(fallbackReport); // ⬅️ langsung pakai fallback dulu
+  const [report, setReport] = useState(fallbackReport);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId) {
+      setReport(fallbackReport);
+      return;
+    }
 
     setLoading(true);
     axios
@@ -29,22 +32,20 @@ export default function Report({ userId }) {
           d.advice &&
           d.totalStudyHours;
 
-        if (isValid) {
-          setReport(d); // data valid
-        } else {
-          setReport(fallbackReport); // fallback
-        }
+        setReport(isValid ? d : fallbackReport);
       })
       .catch(() => {
-        setReport(fallbackReport); // backend error → fallback
+        setReport(fallbackReport);
       })
       .finally(() => setLoading(false));
   }, [userId]);
 
-  if (loading) return <div className="text-center py-10">Loading...</div>;
+  if (loading) {
+    return <div className="text-center py-10">Loading...</div>;
+  }
 
   return (
-    <section className="bg-gradient-to-r from-[#003b63] to-[#005a94] text-white p-8 rounded-b-xl">
+    <section className="bg-gradient-to-r from-[#003b63] to-[#005a94] text-white p-8 rounded-b-xl -mt-6">
       <header className="max-w-6xl mx-auto border border-white/30 rounded-xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         
         {/* Info User */}
@@ -70,12 +71,16 @@ export default function Report({ userId }) {
             <span>{report.learningStyle}</span>
           </p>
 
-          <p className="mt-3 text-sm opacity-90">{report.advice}</p>
+          <p className="mt-3 text-sm opacity-90">
+            {report.advice}
+          </p>
         </article>
 
         {/* Statistik */}
         <aside className="bg-white/20 backdrop-blur p-4 rounded-xl w-40 text-center border border-white/30">
-          <p className="text-sm">{report.totalStudyHours} jam belajar</p>
+          <p className="text-sm">
+            {report.totalStudyHours} jam belajar
+          </p>
         </aside>
 
       </header>

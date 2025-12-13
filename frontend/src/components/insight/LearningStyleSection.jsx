@@ -3,84 +3,96 @@ import axios from "axios";
 
 function TypeCard({ title, icon, desc }) {
   return (
-    <article className="bg-white p-4 rounded-xl shadow flex gap-4">
-      <div className="text-2xl">{icon}</div>
-      <div>
-        <h3 className="font-semibold">{title}</h3>
-        <p className="text-sm text-gray-600">{desc}</p>
+    <article className="w-full bg-white p-5 sm:p-6 rounded-xl shadow flex gap-5 flex-col sm:flex-row">
+      <div className="shrink-0">
+        {icon}
+      </div>
+
+      <div className="flex-1 mt-3 sm:mt-0">
+        <h3 className="font-semibold text-base sm:text-lg text-gray-900">
+          {title}
+        </h3>
+        <p className="text-sm text-gray-600 mt-1 leading-relaxed">
+          {desc}
+        </p>
       </div>
     </article>
   );
 }
 
+
 export default function LearningStyleSection({ userId }) {
   const [types, setTypes] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // ICON STYLE
-  const iconClass =
-    "size-6 text-white [filter:drop-shadow(0_0_1px_black)] stroke-black";
+  const iconClass = "size-6 text-[#0A6A8D]";
 
-  // FALLBACK DATA
-  const fallbackTypes = [
-    {
-      title: "Fast Learner",
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="white"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          className={iconClass}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"
-          />
-        </svg>
-      ),
-      desc: "Kamu menyelesaikan materi dengan cepat dan mampu memahami konsep secara singkat.",
-    },
-    {
-      title: "Consistent Learner",
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="white"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          className={iconClass}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-          />
-        </svg>
-      ),
-      desc: "Pola belajarmu stabil dan kamu mempertahankan ritme tiap minggu.",
-    },
-    {
-      title: "Reflective Learner",
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="white"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          className={iconClass}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M12 20.25c4.556 0 8.25-3.694 8.25-8.25S16.556 3.75 12 3.75 3.75 7.444 3.75 12s3.694 8.25 8.25 8.25zm0 0v-3m0-10.5v3m6.364 3H15m-6 0H5.636"
-          />
-        </svg>
-      ),
-      desc: "Kamu lebih fokus pada pemahaman mendalam dan refleksi.",
-    },
-  ];
+// FALLBACK DATA
+const fallbackTypes = [
+  {
+    title: "Fast Learner",
+    icon: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={1.5}
+        className={iconClass}
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"
+        />
+      </svg>
+    ),
+    desc: "Kamu menyelesaikan materi dengan cepat dan mampu memahami konsep secara singkat.",
+  },
+
+  {
+    title: "Consistent Learner",
+    icon: (
+      // 🎯 Bullseye
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={1.5}
+        className={iconClass}
+      >
+        <circle cx="12" cy="12" r="9" />
+        <circle cx="12" cy="12" r="5" />
+        <circle cx="12" cy="12" r="1.5" />
+      </svg>
+    ),
+    desc: "Pola belajarmu stabil dan kamu mempertahankan ritme tiap minggu.",
+  },
+
+  {
+    title: "Reflective Learner",
+    icon: (
+      // 🧠 Brain (outline)
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={1.5}
+        className={iconClass}
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M9 4.5a3 3 0 0 0-3 3v.75a3 3 0 0 0-1.5 5.25A3 3 0 0 0 6 18.75h.75A3 3 0 0 0 12 20.25a3 3 0 0 0 5.25-1.5H18a3 3 0 0 0 1.5-5.25A3 3 0 0 0 18 7.5v-.75a3 3 0 0 0-3-3"
+        />
+      </svg>
+    ),
+    desc: "Kamu lebih fokus pada pemahaman mendalam dan refleksi.",
+  },
+];
+
 
   // FETCH DATA
   const fetchLearningStyles = async () => {
@@ -115,10 +127,12 @@ export default function LearningStyleSection({ userId }) {
   if (loading) return <div className="text-center py-10 text-black">Loading...</div>;
 
   return (
-    <section className="max-w-6xl mx-auto mt-10 px-6 space-y-4">
-      {types.map((t, idx) => (
-        <TypeCard key={idx} {...t} />
-      ))}
-    </section>
+    <section className="max-w-6xl mx-auto mt-10 space-y-4">
+    {types.map((t, idx) => (
+      <TypeCard key={idx} {...t} />
+    ))}
+  </section>
+  
+
   );
 }
