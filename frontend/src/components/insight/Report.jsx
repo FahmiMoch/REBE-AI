@@ -45,7 +45,7 @@ export default function Report({ userId }) {
   }
 
   return (
-    <section className="bg-gradient-to-r from-[#003b63] to-[#005a94] text-white p-8 rounded-b-xl -mt-6">
+    <section className="bg-gradient-to-r from-[#003b63] to-[#005a94] text-white p-8 rounded-b-xl -mt-8">
       <header className="max-w-6xl mx-auto border border-white/30 rounded-xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         
         {/* Info User */}
