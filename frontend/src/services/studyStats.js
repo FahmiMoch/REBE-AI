@@ -1,6 +1,5 @@
 import axios from "axios";
 
-import axios from "axios";
 
 export const getUserStudyStats = async (userId) => {
   try {
