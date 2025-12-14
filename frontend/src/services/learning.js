@@ -1,4 +1,3 @@
-// src/services/learning.js
 import api from "./api";
 
 export const getLearningStatistics = async () => {
@@ -8,7 +7,7 @@ export const getLearningStatistics = async () => {
   } catch (error) {
     console.error(
       "getLearningStatistics error:",
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     throw error;
   }
@@ -19,10 +18,7 @@ export const predictML = async (payload) => {
     const response = await api.post("/ml/predict", payload);
     return response.data;
   } catch (error) {
-    console.error(
-      "predictML error:",
-      error.response?.data || error.message
-    );
+    console.error("predictML error:", error.response?.data || error.message);
     throw error;
   }
 };

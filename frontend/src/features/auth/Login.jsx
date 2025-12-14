@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login as loginUser } from "../../services/auth"; // pastikan path benar
+import { login as loginUser } from "../../services/auth";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -14,17 +15,24 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-  
+
     try {
-      const data = await loginUser(form.email, form.password);
-  
-      // Simpan token & refreshToken sesuai backend
-      localStorage.setItem("token", data.token); // ini sudah accessToken
-      localStorage.setItem("refreshToken", data.refreshToken);
-  
-      // Mapping displayName backend ke display_name agar FE lama jalan
-      const displayName = data.user.display_name || data.user.displayName;
-  
+      const { user, token, refreshToken } = await loginUser(
+        form.email,
+        form.password,
+      );
+
+      if (!user) throw new Error("User tidak ditemukan");
+
+      // Simpan token & refreshToken
+      localStorage.setItem("token", token);
+      localStorage.setItem("refreshToken", refreshToken);
+
+      // Simpan user ke localStorage secara aman
+      localStorage.setItem("user", JSON.stringify(user || {}));
+
+      const displayName = user.display_name || "User";
+
       alert(`Selamat datang, ${displayName}!`);
       navigate("/dashboard");
     } catch (err) {
@@ -34,8 +42,6 @@ const Login = () => {
       setLoading(false);
     }
   };
-  
-
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white p-4">
@@ -89,9 +95,12 @@ const Login = () => {
 
         <p className="mt-6 text-sm text-gray-600 text-center">
           Belum punya akun?{" "}
-          <a href="#" className="text-blue-600 font-semibold hover:underline">
+          <Link
+            to="/register"
+            className="text-blue-600 font-semibold hover:underline"
+          >
             daftar
-          </a>
+          </Link>
         </p>
       </div>
     </div>

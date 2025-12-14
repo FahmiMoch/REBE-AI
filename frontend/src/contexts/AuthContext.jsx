@@ -11,8 +11,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      // Jika ada token, kita bisa set user sebagai logged-in secara sederhana
-      setUser({ token }); // opsional, bisa disesuaikan dengan data user dari login
+      setUser({ token }); 
     }
     setLoading(false);
   }, []);
@@ -20,7 +19,7 @@ export const AuthProvider = ({ children }) => {
   const login = (userData) => setUser(userData);
 
   const logout = () => {
-    logoutService(); // Hapus token dari localStorage
+    logoutService(); 
     setUser(null);
   };
 

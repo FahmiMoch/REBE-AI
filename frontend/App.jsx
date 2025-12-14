@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Login from "./src/features/auth/Login";
+import Register from "./src/features/auth/Register"; // <- tambahkan ini
 import MainDashboard from "./src/pages/MainDashboard";
 import InsightDashboard from "./src/pages/InsightDashboard";
 
@@ -16,7 +17,7 @@ const AppWrapper = () => {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
-
+        <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<MainDashboard />} />
         <Route path="/insight" element={<InsightDashboard />} />
       </Routes>

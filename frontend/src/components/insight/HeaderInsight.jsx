@@ -1,7 +1,12 @@
 // src/components/insight/HeaderInsight.jsx
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBell, faChevronDown, faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBell,
+  faChevronDown,
+  faBars,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 
@@ -28,7 +33,6 @@ export default function HeaderInsight() {
   return (
     <header className="w-full bg-white shadow-md fixed top-0 left-0 z-50">
       <nav className="max-w-screen-xl mx-auto px-4 lg:px-6 py-4 flex items-center gap-6">
-
         {/* Logo */}
         <img src="/dicoding-logos.png" alt="Dicoding Logo" className="w-32" />
 
@@ -36,19 +40,17 @@ export default function HeaderInsight() {
         <ul className="hidden md:flex items-center gap-6 ml-6 text-sm font-medium text-gray-700">
           {menuItems.map((item) => (
             <li key={item.name}>
-              <a href={item.href} className="hover:text-blue-600">{item.name}</a>
+              <a href={item.href} className="hover:text-blue-600">
+                {item.name}
+              </a>
             </li>
           ))}
         </ul>
 
         {/* Right Section: Avatar + Bell + Hamburger */}
         <div className="flex items-center gap-4 ml-auto relative">
-
           {/* Avatar */}
-          <div className="relative w-10 h-10 flex items-center justify-center">
-            <div className="absolute w-10 h-10 bg-blue-200 rounded-full z-0"></div>
-            <div className="w-6 h-6 bg-gray-300 rounded-full z-10"></div>
-          </div>
+          <div className="relative w-10 h-10 flex items-center justify-center bg-gray-300 rounded-full border-[4px] border-cyan-300 text-white font-semibold text-lg select-none"></div>
 
           {/* Chevron Dropdown */}
           <div className="relative">
@@ -64,10 +66,29 @@ export default function HeaderInsight() {
 
             {openDropdown && (
               <ul className="absolute right-0 mt-2 bg-white shadow-md rounded-lg w-40 py-2 text-sm font-medium text-gray-700 z-30">
-                <li><a href="/dashboard" className="block px-4 py-2 hover:bg-gray-100">Dashboard</a></li>
-                <li><a href="#" className="block px-4 py-2 hover:bg-gray-100">Profile Saya</a></li>
-                <li><a href="#" className="block px-4 py-2 hover:bg-gray-100">Daftar Pesanan</a></li>
-                <li><a href="#" className="block px-4 py-2 hover:bg-gray-100">Pengaturan</a></li>
+                <li>
+                  <a
+                    href="/dashboard"
+                    className="block px-4 py-2 hover:bg-gray-100"
+                  >
+                    Dashboard
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="block px-4 py-2 hover:bg-gray-100">
+                    Profile Saya
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="block px-4 py-2 hover:bg-gray-100">
+                    Daftar Pesanan
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="block px-4 py-2 hover:bg-gray-100">
+                    Pengaturan
+                  </a>
+                </li>
                 <li>
                   <button
                     onClick={handleLogout}
@@ -80,14 +101,20 @@ export default function HeaderInsight() {
             )}
           </div>
 
-           {/* Bell Icon */}
-           <button className="relative hover:text-gray-700" aria-label="Notification Bell">
+          {/* Bell Icon */}
+          <button
+            className="relative hover:text-gray-700"
+            aria-label="Notification Bell"
+          >
             <FontAwesomeIcon
               icon={faBell}
               className="absolute w-6 h-6 text-black"
               style={{ transform: "scale(1.15)" }}
             />
-            <FontAwesomeIcon icon={faBell} className="relative w-6 h-6 text-white" />
+            <FontAwesomeIcon
+              icon={faBell}
+              className="relative w-6 h-6 text-white"
+            />
           </button>
 
           {/* Hamburger (mobile) */}
@@ -95,7 +122,10 @@ export default function HeaderInsight() {
             className="md:hidden text-gray-700 hover:text-blue-600"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            <FontAwesomeIcon icon={mobileMenuOpen ? faXmark : faBars} className="w-6 h-6" />
+            <FontAwesomeIcon
+              icon={mobileMenuOpen ? faXmark : faBars}
+              className="w-6 h-6"
+            />
           </button>
         </div>
       </nav>
@@ -105,7 +135,9 @@ export default function HeaderInsight() {
         <ul className="md:hidden bg-white shadow-md w-full px-4 py-4 flex flex-col gap-4 text-sm font-medium text-gray-700">
           {menuItems.map((item) => (
             <li key={item.name}>
-              <a href={item.href} className="block hover:text-blue-600">{item.name}</a>
+              <a href={item.href} className="block hover:text-blue-600">
+                {item.name}
+              </a>
             </li>
           ))}
         </ul>

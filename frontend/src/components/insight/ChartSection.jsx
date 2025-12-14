@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import {
   LineChart,
   Line,
@@ -10,61 +10,59 @@ import {
 } from "recharts";
 import axios from "axios";
 
-export default function ChartSection({ range, setRange, journeyId }) {
-  const [rawData, setRawData] = useState([]);
+export default function ChartSection({ range, setRange, userId }) {
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchData = async () => {
-    if (!journeyId) {
-      console.log("⚠️ journeyId is missing");
+  // =====================================================
+  // FETCH CHART DATA (SNAPSHOT PER HARI)
+  // =====================================================
+  const fetchData = useCallback(async () => {
+    if (!userId) {
+      setData([]);
       return;
     }
+
     setLoading(true);
+
     try {
       const res = await axios.get(
-        `/api/developer-journey/completions/journeys/${journeyId}/study-duration?range=${range}`
+        `https://api.teamcs222.my.id/api/ml-predictions/user/${userId}`,
       );
-      console.log("📦 Fetched data from backend:", res.data.data);
-      setRawData(res.data.data || []);
+
+      const items = res.data?.data || [];
+
+      const normalized = items
+        .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+        .slice(-range)
+        .map((item) => ({
+          dayLabel: new Date(item.created_at).toLocaleDateString("id-ID", {
+            weekday: "short",
+          }),
+          value: Number(item.avg_study_duration || 0),
+        }));
+
+      setData(normalized);
     } catch (err) {
-      console.error("❌ Failed to fetch study duration:", err);
-      setRawData([]);
+      console.error("Failed to fetch chart data:", err);
+      setData([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId, range]);
 
   useEffect(() => {
     fetchData();
-  }, [range, journeyId]);
+  }, [fetchData]);
 
-  useEffect(() => {
-    const interval = setInterval(fetchData, 10000);
-    return () => clearInterval(interval);
-  }, [range, journeyId]);
-
-  const data = useMemo(() => {
-    const daysLabel = ["Senin", "Selasa", "Rabu", "Kamis", "Jum'at", "Sabtu", "Minggu"];
-
-    // Pakai 7 titik, jika data kosong isi 0
-    const sliced = rawData.length ? rawData.slice(-7) : Array(7).fill({ duration: 0 });
-
-    const mapped = sliced.map((item, i) => ({
-      index: String(i),
-      value: item.duration || 0,
-      dayLabel: daysLabel[i % 7],
-    }));
-
-    console.log("📊 Data for chart:", mapped);
-    return mapped;
-  }, [rawData]);
+  const chartData = useMemo(() => data, [data]);
 
   return (
     <section className="max-w-6xl mx-auto bg-white p-6 rounded-xl mt-10 shadow">
       <header>
         <h2 className="font-semibold mb-1">Kegiatan Pembelajaran</h2>
         <p className="text-sm text-gray-600 mb-4">
-          Aktivitas Penyelesaian Materi Per Hari
+          Durasi belajar rata-rata per hari
         </p>
       </header>
 
@@ -86,38 +84,55 @@ export default function ChartSection({ range, setRange, journeyId }) {
 
       {loading ? (
         <div className="text-center py-20 text-gray-500">Loading chart...</div>
+      ) : chartData.length === 0 ? (
+        <div className="text-center py-20 text-gray-400">
+          Belum ada data pembelajaran
+        </div>
       ) : (
-        <figure className="w-full h-64 min-h-[250px]">
+        <figure className="w-full h-64 min-h-[260px]">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data} margin={{ top: 20, right: 15, left: -10 }}>
-              <CartesianGrid stroke="#e5e5e5" strokeDasharray="3 3" vertical={false} />
+            <LineChart
+              data={chartData}
+              margin={{ top: 20, right: 15, left: -10 }}
+            >
+              <CartesianGrid
+                stroke="#e5e5e5"
+                strokeDasharray="3 3"
+                vertical={false}
+              />
+
+              {/* 🔧 FIX DI SINI */}
               <XAxis
-                dataKey="index"
-                type="category"
-                scale="point"
-                ticks={["0", "1", "2", "3", "4", "5", "6"]}
-                tickFormatter={(i) => data[Number(i)]?.dayLabel || ""}
+                dataKey="dayLabel"
+                scale="band"
                 interval={0}
-                tick={{ fontSize: 12, fill: "#666", dy: 10 }}
+                tick={{ fontSize: 12, fill: "#666", dy: 8 }}
                 tickLine={false}
                 axisLine={false}
               />
-              <YAxis tick={{ fontSize: 12, fill: "#666" }} tickLine={false} axisLine={false} />
+
+              <YAxis
+                tick={{ fontSize: 12, fill: "#666" }}
+                tickLine={false}
+                axisLine={false}
+              />
+
               <Tooltip
+                formatter={(value) => [`${value} menit`, "Durasi"]}
                 contentStyle={{
                   borderRadius: "10px",
                   border: "1px solid #ddd",
                   fontSize: "12px",
                 }}
               />
+
               <Line
                 type="monotone"
                 dataKey="value"
                 stroke="#0052D5"
                 strokeWidth={4}
                 dot={false}
-                activeDot={{ r: 6, fill: "#0052D5" }}
-                style={{ filter: "drop-shadow(0px 0px 5px rgba(0, 82, 213, 0.5))" }}
+                activeDot={{ r: 6 }}
               />
             </LineChart>
           </ResponsiveContainer>
