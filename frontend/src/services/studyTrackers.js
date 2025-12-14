@@ -1,8 +1,5 @@
-import axios from "./api"; // pakai instance axios global kalau ada
+import axios from "./api"; 
 
-// ===================================================
-// Record study duration untuk journey tertentu
-// ===================================================
 export const recordStudyDuration = async (journeyId, durationInSeconds) => {
   try {
     const res = await axios.post(`/journeys/${journeyId}/study-duration`, {
@@ -15,9 +12,7 @@ export const recordStudyDuration = async (journeyId, durationInSeconds) => {
   }
 };
 
-// ===================================================
-// Get all journeys
-// ===================================================
+
 export const getJourneys = async () => {
   try {
     const res = await axios.get("/journeys");
@@ -28,9 +23,6 @@ export const getJourneys = async () => {
   }
 };
 
-// ===================================================
-// Get all tutorials for a journey
-// ===================================================
 export const getJourneyTutorials = async (journeyId) => {
   try {
     const res = await axios.get(`/journeys/${journeyId}/tutorials`);

@@ -1,12 +1,14 @@
 import axios from "axios";
 
+import axios from "axios";
+
 export const getUserStudyStats = async (userId) => {
   try {
     const res = await axios.get(
-      `https://api.teamcs222.my.id/api/ml-predictions/user/${userId}/latest`,
+      `${import.meta.env.VITE_API_URL}/ml-predictions/user/${userId}/latest`
     );
 
-    const userData = res.data.data || {}; // ✅ FIX
+    const userData = res.data.data || {};
 
     return {
       user_id: userData.user_id,
@@ -24,3 +26,4 @@ export const getUserStudyStats = async (userId) => {
     return null;
   }
 };
+

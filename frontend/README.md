@@ -2,6 +2,7 @@ Frontend dari proyek **AI Learning Insight** yang menampilkan progres belajar, t
 
 ### Teknologi yang digunakan:
 
+- Figma
 - React
 - TailwindCSS
 - Vite
